@@ -4,9 +4,91 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Text File Translator</title>
+    <style>
+        nav { background: #007BFF; color: white; padding: 10px; }
+        nav ul { list-style: none; padding: 0; display: flex; gap: 10px; }
+        nav a { color: white; text-decoration: none; }
+        nav a:hover { text-decoration: underline; }
+        .container { margin: 20px auto; max-width: 600px; }
+        label, button, input, select, table { display: block; margin: 10px 0; }
+        table { width: 100%; border-collapse: collapse; }
+        table, th, td { border: 1px solid #ddd; }
+        th, td { padding: 8px; text-align: center; }
+        .status { margin: 10px 0; color: green; }
+    </style>
 </head>
 <body>
-    <a href=" {{ url_for('view_details') }}">Click</a>
-    <h1>Hello {{reply}}</h1>
+    <!-- Navbar -->
+    <nav>
+        <ul>
+            <li><a href="#home">Home</a></li>
+            <li><a href="#all-processed-files">All Processed Files</a></li>
+        </ul>
+    </nav>
+
+    <!-- Home Section -->
+    <div class="container">
+        <h2>Text File Translator</h2>
+
+        <!-- Status Updates -->
+        {% if status %}
+        <div class="status">{{ status }}</div>
+        {% endif %}
+
+        <!-- File Upload Form -->
+        <form action="/uploadfile" method="post" enctype="multipart/form-data">
+            <!-- File Input -->
+            <label for="file-upload">Upload a .txt file:</label>
+            <input type="file" id="file-upload" name="file" accept=".txt" required>
+
+            <!-- Dropdown Menu -->
+            <label for="language-select">Select Target Language:</label>
+            <select id="language-select" name="language" required>
+                <option value="french">French</option>
+                <option value="spanish">Spanish</option>
+                <option value="german">German</option>
+            </select>
+
+            <!-- Submit Button -->
+            <button type="submit">Translate</button>
+        </form>
+
+        <!-- Translated result -->
+        {% if translated_text %}
+        <div>
+            <h3>Translated text:</h3>
+            <p>{{ translated_text }}</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- History Section (Initially Hidden) -->
+    
+    <div id="history" class="container">
+        <a href="/session-history">View History</a>
+        {% if show_history %}
+        <table>
+            <thead>
+                <tr>
+                    <th>File Name</th>
+                    <th>Status</th>
+                    <th>Date of Processing</th>
+                    <th>Download</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for file in history %}
+                <tr>
+                    <td>{{ file.file_name }}</td>
+                    <td>{{ file.status }}</td>
+                    <td>{{ file.date }}</td>
+                    <td><a href="#">Download</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endif %}
+    </div>
+    
 </body>
 </html>
