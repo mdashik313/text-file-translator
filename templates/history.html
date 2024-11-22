@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2> {{page_title}} </h2>
+
+{% if show_history %}
+    <table>
+        <thead>
+            <tr>
+                <th>File Name</th>
+                <th>Status</th>
+                <th>Date of Processing</th>
+                <th>Download</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for file in files %}
+            <tr>
+                <td>{{ file.translated_file_name }}</td>
+                <td>completed</td>
+                <td>{{ file.processed_at }}</td>
+                <td><a href="http://localhost:8000/download/{{file.translated_file_name}}" target="_blank">Download</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p>No files found.</p>
+{% endif %}
+{% endblock %}

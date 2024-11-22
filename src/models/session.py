@@ -21,16 +21,16 @@ class SessionSchema(BaseModel):
                 "created_at": "YYYY-MM-DD HH:MM:SS.ssssss",
                 "files_processed": [
                     {
-                        "file_name": "example.txt",
+                        "translated_file_name": "example.txt",
                         "file_path": "/files/example.txt",
                         "processed_at": "2024-11-22T08:50:00.000000",
-                        "result": "Translated text"
+                        "translated_text": "Translated text"
                     },
                     {
-                        "file_name": "example.txt",
+                        "translated_file_name": "example.txt",
                         "file_path": "/files/example.txt",
                         "processed_at": "2024-11-22T08:50:00.000000",
-                        "result": "Translated text1"
+                        "translated_text": "Translated text"
                     }
                 ]
             }

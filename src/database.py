@@ -12,13 +12,13 @@ async def add_translated_file(session_data: dict, session_id: str):
     existing_session = await session_history.find_one({"session_id": session_id})
     if not existing_session:
         #If the session doesn't exist, create one
-        session_data = SessionSchema(
+        session_doc = SessionSchema(
             session_id=session_id,
             created_at=task["created_at"],
             files_processed=[]
         )
-        await session_history.insert_one(session_data.dict())
-        return session_data.dict()
+        await session_history.insert_one(session_doc.dict())
+        # return session_data.dict()
 
     #Add the file details to the session (either new or existing)
     file_data = File(
@@ -36,6 +36,12 @@ async def add_translated_file(session_data: dict, session_id: str):
 
     return file_data.dict()
 
-async def get_translated_files(session_id: str):
+async def get_history_by_session_id(session_id: str):
     results = await session_history.find_one({"session_id": session_id})
     return results
+
+async def get_all_history():
+    sessions = []
+    async for session in session_history.find():
+        sessions.append(session) 
+    return sessions

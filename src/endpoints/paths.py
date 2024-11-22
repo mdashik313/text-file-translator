@@ -7,7 +7,7 @@ import asyncio
 import uuid
 import os
 from datetime import date, datetime
-from src.database import add_translated_file, get_translated_files
+from src.database import *
 
 
 router = APIRouter(tags=["translator"])
@@ -64,7 +64,7 @@ async def home(request: Request):
 async def upload_file(
     request: Request,  
     background_tasks: BackgroundTasks, 
-    file:UploadFile = File(...), 
+    file:UploadFile = File, 
     language:str = Form(...), 
     session_id: str = Form(...),
     created_at: str = Form(...)
@@ -104,8 +104,6 @@ async def websocket_endpoint(websocket: WebSocket, session_id: str):
     #Retrieve session data
     task = active_tasks[session_id]
     
-    print(session_id)
-
     #Step 1: Notify "File received"
     await websocket.send_text("File received")
     time.sleep(2)
@@ -119,10 +117,7 @@ async def websocket_endpoint(websocket: WebSocket, session_id: str):
     #Notify translation complete and send the download link
     translated_file_path = task["file_path"]
     translated_file_name = task["translated_file_name"]
-    download_link = f"http://localhost:8000/download/{session_id}/{translated_file_name}"
-
-    print(download_link)
-    print(await get_translated_files(session_id))
+    download_link = f"http://localhost:8000/download/{translated_file_name}"
 
     await websocket.send_text(f"Translation complete! Download your file here: {download_link}")
     
@@ -131,7 +126,56 @@ async def websocket_endpoint(websocket: WebSocket, session_id: str):
 
     await websocket.close()
 
-@router.get("/download/{session_id}/{file_name}", response_class=FileResponse)
+@router.get("/download/{file_name}", response_class=FileResponse)
 async def download_file(file_name: str):
     file_path = os.path.join(UPLOAD_DIR, file_name)
     return FileResponse(path=file_path, media_type="application/octet-stream", filename=file_name)
+
+
+@router.get("/history/{session_id}", response_class=FileResponse)
+async def session_history(request: Request, session_id: str):
+    result = await get_history_by_session_id(session_id)
+    files = None
+    show_history = False
+
+    if result:
+        files = result["files_processed"]
+        show_history = True
+
+    context = {
+        "request" : request,
+        "files" : files,
+        "show_history" : show_history,
+        "page_title" : "Session History"
+    }
+
+    return templates.TemplateResponse(
+        "history.html",
+        context
+    )
+
+@router.get("/history", response_class=FileResponse)
+async def all_history(request: Request):
+    sessions = await get_all_history()
+    all_files = []
+    show_history = False
+
+    if sessions:
+        show_history = True
+
+    print(sessions)
+    for session in sessions:
+        for file in session["files_processed"]:
+            all_files.append(file)
+
+    context = {
+        "request" : request,
+        "files" : all_files,
+        "show_history" : show_history,
+        "page_title" : "All History"
+    }
+
+    return templates.TemplateResponse(
+        "history.html",
+        context
+    )
