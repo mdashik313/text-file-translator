@@ -22,6 +22,7 @@
     <nav>
         <ul>
             <li><a href="#home">Home</a></li>
+            <li><a href="#home">View History</a></li>
             <li><a href="#all-processed-files">All Processed Files</a></li>
         </ul>
     </nav>
@@ -31,12 +32,12 @@
         <h2>Text File Translator</h2>
 
         <!-- Status Updates -->
-        {% if status %}
-        <div class="status">{{ status }}</div>
-        {% endif %}
+        
+        <div id='live-status' class="status">
+        </div>
 
         <!-- File Upload Form -->
-        <form action="/uploadfile" method="post" enctype="multipart/form-data">
+        <form id="upload-form" action="" method="post" enctype="multipart/form-data">
             <!-- File Input -->
             <label for="file-upload">Upload a .txt file:</label>
             <input type="file" id="file-upload" name="file" accept=".txt" required>
@@ -47,22 +48,16 @@
                 <option value="french">French</option>
                 <option value="spanish">Spanish</option>
                 <option value="german">German</option>
+                <option value="english">English</option>
+                <option value="bangla">Bangla</option>
             </select>
 
             <!-- Submit Button -->
             <button type="submit">Translate</button>
         </form>
-
-        <!-- Translated result -->
-        {% if translated_text %}
-        <div>
-            <h3>Translated text:</h3>
-            <p>{{ translated_text }}</p>
-        </div>
-        {% endif %}
     </div>
 
-    <!-- History Section (Initially Hidden) -->
+    <!-- View History -->
     
     <div id="history" class="container">
         <a href="/session-history">View History</a>
@@ -89,6 +84,79 @@
         </table>
         {% endif %}
     </div>
+
+    <script>
+        const form = document.getElementById("upload-form");
+        const statusDiv = document.getElementById("live-status");
+
+        // Generate a unique session id if not already generated
+        if (!localStorage.getItem("session_id")) {
+            const session_id = Date.now().toString();
+            localStorage.setItem("session_id", session_id);
+
+            const created_at = new Date().toISOString(); // Generate the created_at timestamp
+            localStorage.setItem("created_at", created_at);
+        }
+
+        // Get the session id
+        const session_id = localStorage.getItem("session_id");
+        const created_at = localStorage.getItem("created_at");
+        
+
+        form.addEventListener("submit", async (event) => {
+            event.preventDefault();
+
+            // data collection
+            const formData = new FormData(form);
+            formData.append("session_id", session_id);
+            formData.append("created_at", created_at);
+            
+
+            // Upload the file
+            const response = await fetch("/uploadfile", {
+                method: "POST",
+                body: formData
+            });
+
+            
+            // const data = await response.json();
+            // const sessionId = data.session_id;
+
+            // Open WebSocket connection for status updates
+            const ws = new WebSocket(`ws://localhost:8000/ws/${session_id}`);
+
+            ws.onmessage = (event) => {
+                // Updating the status
+                const message = event.data
+
+                // const message = document.createElement("li");
+                // message.textContent = event.data; // Correct way to set the message
+                // statusDiv.appendChild(message);
+
+                const listItem = document.createElement("li");
+
+                if (message.startsWith("Translation complete!")) {
+                    const downloadLink = message.split("Download your file here: ")[1];  //split and take the 2nd item(link)
+                    const linkElement = document.createElement("a");
+                    linkElement.href = downloadLink;
+                    linkElement.textContent = "Download";
+                    linkElement.target = "_blank";
+                    listItem.textContent = "Translation complete! Download your file here: ";
+                    listItem.appendChild(linkElement);
+                } 
+                else {
+                    listItem.textContent = message;
+                }
+
+                statusDiv.appendChild(listItem);
+            };
+
+            ws.onerror = () => {
+                console.log("websocket error");
+            };
+            
+        });
+    </script>
     
 </body>
 </html>

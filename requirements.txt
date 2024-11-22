@@ -4,6 +4,7 @@ cachetools==5.5.0
 certifi==2024.8.30
 charset-normalizer==3.4.0
 click==8.1.7
+dnspython==2.7.0
 exceptiongroup==1.2.2
 fastapi==0.115.5
 google-ai-generativelanguage==0.6.10
@@ -20,12 +21,14 @@ httplib2==0.22.0
 idna==3.10
 Jinja2==3.1.4
 MarkupSafe==3.0.2
+motor==3.6.0
 proto-plus==1.25.0
 protobuf==5.28.3
 pyasn1==0.6.1
 pyasn1_modules==0.4.1
 pydantic==2.10.0
 pydantic_core==2.27.0
+pymongo==4.9.2
 pyparsing==3.2.0
 python-dotenv==1.0.1
 python-multipart==0.0.17
@@ -38,3 +41,4 @@ typing_extensions==4.12.2
 uritemplate==4.1.1
 urllib3==2.2.3
 uvicorn==0.32.1
+websockets==14.1
