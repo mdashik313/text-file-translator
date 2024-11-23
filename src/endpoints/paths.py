@@ -103,6 +103,9 @@ async def websocket_endpoint(websocket: WebSocket, session_id: str):
 
     #Retrieve session data
     task = active_tasks[session_id]
+    # Step 0: Notify file uploading
+    # await websocket.send_text("File uploading")
+    # time.sleep(2)
     
     #Step 1: Notify "File received"
     await websocket.send_text("File received")
