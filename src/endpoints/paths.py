@@ -24,7 +24,8 @@ async def translate_in_background(
     source_text: str, 
     target_language: str, 
     file_name: str,
-    task_complete_event: asyncio.Event  # asyncio event to notify websocket when tranlataion done
+    task_complete_event: asyncio.Event = None,  # asyncio event to notify websocket when tranlataion done
+    websocket: WebSocket = None #optional
 ):
 
     translated_text = translate(source_text, target_language)
@@ -75,7 +76,7 @@ async def upload_file(
     file_name = file.filename
 
 
-    task_complete_event = asyncio.Event()  # Create an event to notify when the task is complete
+    # task_complete_event = asyncio.Event()  # Create an event to notify when the task is complete
 
     # Store session data in shared dictionary
     active_tasks[session_id] = {
@@ -83,12 +84,12 @@ async def upload_file(
         "source_text": source_text,
         "target_language": target_language,
         "file_name": file_name,
-        "event": task_complete_event,
+        # "event": task_complete_event,
         "created_at": created_at
     }
 
     #Add the translation task to the background and passing the event
-    background_tasks.add_task(translate_in_background, session_id, source_text, target_language, file_name, task_complete_event)
+    # background_tasks.add_task(translate_in_background, session_id, source_text, target_language, file_name, task_complete_event)
 
     context = {
         "request" : request,
@@ -106,16 +107,31 @@ async def websocket_endpoint(websocket: WebSocket, session_id: str):
     # Step 0: Notify file uploading
     # await websocket.send_text("File uploading")
     # time.sleep(2)
+
+    await websocket.send_text("File receiving...")
+    time.sleep(1)
     
     #Step 1: Notify "File received"
-    await websocket.send_text("File received")
+    await websocket.send_text("Received")
     time.sleep(2)
+
+    source_text = task["source_text"]
+    target_language = task["target_language"]
+    file_name = task["file_name"]
+    task_complete_event = asyncio.Event() 
+
 
     #Step 2: Notify "Translating"
-    await websocket.send_text("Translating")
+    await websocket.send_text("Translating...")
     time.sleep(2)
 
-    await task["event"].wait()
+    asyncio.create_task(
+        translate_in_background(
+            session_id, source_text, target_language, file_name, task_complete_event, websocket
+        )
+    )
+
+    await task_complete_event.wait()
 
     #Notify translation complete and send the download link
     translated_file_path = task["file_path"]
