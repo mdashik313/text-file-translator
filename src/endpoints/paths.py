@@ -34,8 +34,8 @@ async def translate_in_background(
     file_path = os.path.join(UPLOAD_DIR, unique_filename)
 
     #Save the file
-    with open(file_path, "w", encoding="utf-8") as f:
-        f.write(translated_text)
+    # with open(file_path, "w", encoding="utf-8") as f:
+    #     f.write(translated_text)
 
     # Update task status
     active_tasks[session_id].update({
@@ -117,7 +117,8 @@ async def websocket_endpoint(websocket: WebSocket, session_id: str):
     #Notify translation complete and send the download link
     translated_file_path = task["file_path"]
     translated_file_name = task["translated_file_name"]
-    download_link = f"http://localhost:8000/download/{translated_file_name}"
+    translated_text = task["translated_text"]
+    download_link = f"http://localhost:8000/download/{translated_file_name}/{translated_text}"
 
     await websocket.send_text(f"Translation complete! Download your file here: {download_link}")
     
@@ -126,10 +127,17 @@ async def websocket_endpoint(websocket: WebSocket, session_id: str):
 
     await websocket.close()
 
-@router.get("/download/{file_name}", response_class=FileResponse)
-async def download_file(file_name: str):
+@router.get("/download/{file_name}/{translated_text}", response_class=FileResponse)
+async def download_file(file_name: str, background_tasks: BackgroundTasks, translated_text : str):
     file_path = os.path.join(UPLOAD_DIR, file_name)
-    return FileResponse(path=file_path, media_type="application/octet-stream", filename=file_name)
+
+    # Save the file
+    with open(file_path, "w", encoding="utf-8") as f:
+        f.write(translated_text)
+
+    # after downloading, delete the file form server
+    background_tasks.add_task(os.remove, file_path)
+    return FileResponse(path=file_path, media_type="application/octet-stream", filename=file_name, background=background_tasks)
 
 
 @router.get("/history/{session_id}", response_class=FileResponse)
@@ -163,7 +171,7 @@ async def all_history(request: Request):
     if sessions:
         show_history = True
 
-    print(sessions)
+    # print(sessions)
     for session in sessions:
         for file in session["files_processed"]:
             all_files.append(file)

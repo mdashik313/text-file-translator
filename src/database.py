@@ -1,11 +1,14 @@
 import motor.motor_asyncio  #motor is asynchronous python driver for MongoDB
 from src.models.session import  File, SessionSchema
+import os
+import dotenv
+dotenv.load_dotenv()
 
 
-MONGO_DETAILS = "mongodb://localhost:27017"
-client = motor.motor_asyncio.AsyncIOMotorClient(MONGO_DETAILS)
+client = motor.motor_asyncio.AsyncIOMotorClient(os.getenv("MONGODB_CONNECTION_URI"))
 database = client.sessionDB
 session_history = database.get_collection("session_history")
+print("Connected to the MongoDB database!")
 
 async def add_translated_file(session_data: dict, session_id: str):
     task = session_data[session_id]
