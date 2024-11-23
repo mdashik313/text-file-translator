@@ -99,7 +99,7 @@ async def upload_file(
     return HTMLResponse("")
 
 @router.websocket("/ws/{session_id}")
-async def websocket_endpoint(websocket: WebSocket, session_id: str):
+async def websocket_endpoint(websocket: WebSocket, session_id: str, background_tasks: BackgroundTasks):
     await websocket.accept()
 
     #Retrieve session data
@@ -125,11 +125,13 @@ async def websocket_endpoint(websocket: WebSocket, session_id: str):
     await websocket.send_text("Translating...")
     time.sleep(2)
 
-    asyncio.create_task(
-        translate_in_background(
-            session_id, source_text, target_language, file_name, task_complete_event, websocket
-        )
-    )
+    # asyncio.create_task(
+    #     translate_in_background(
+    #         session_id, source_text, target_language, file_name, task_complete_event, websocket
+    #     )
+    # )
+
+    background_tasks.add_task(translate_in_background, session_id, source_text, target_language, file_name, task_complete_event, websocket)
 
     await task_complete_event.wait()
 
