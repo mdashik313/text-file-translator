@@ -115,7 +115,7 @@ async def websocket_endpoint(websocket: WebSocket, session_id: str):
     translated_file_path = task["file_path"]
     translated_file_name = task["translated_file_name"]
     translated_text = task["translated_text"]
-    download_link = f"http://localhost:8000/download/{translated_file_name}/{translated_text}"
+    download_link = f"http://0.0.0.0:8000/download/{translated_file_name}/{translated_text}"
 
     await websocket.send_text(f"Translation complete! Download your file here: {download_link}")
 
