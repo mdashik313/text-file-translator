@@ -19,7 +19,7 @@
                 <td>{{ file.translated_file_name }}</td>
                 <td>completed</td>
                 <td>{{ file.processed_at }}</td>
-                <td><a href="http://0.0.0.0:8000/download/{{file.translated_file_name}}/{{file.translated_text}}">Download</a></td>
+                <td><a href="http://${window.location.host}/download/{{file.translated_file_name}}/{{file.translated_text}}">Download</a></td>
             </tr>
             {% endfor %}
         </tbody>
