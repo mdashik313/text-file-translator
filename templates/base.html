@@ -74,7 +74,7 @@
             // const sessionId = data.session_id;
 
             // Open WebSocket connection for status updates
-            const ws = new WebSocket(`ws://text-file-translator-api.onrender.com/ws/${session_id}`);
+            const ws = new WebSocket(`ws://0.0.0.0:8000/ws/${session_id}`);
 
             ws.onmessage = (event) => {
                 // Updating the status

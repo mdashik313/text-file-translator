@@ -85,7 +85,6 @@ async def upload_file(
 @router.websocket("/ws/{session_id}")
 async def websocket_endpoint(websocket: WebSocket, session_id: str):
     await websocket.accept()
-    print("websocket started.")
 
     #Retrieve session data
     task = active_tasks[session_id]
@@ -127,7 +126,6 @@ async def websocket_endpoint(websocket: WebSocket, session_id: str):
     del active_tasks[session_id]
 
     await websocket.close()
-    print("websocket started.")
 
 @router.get("/download/{file_name}/{translated_text}", response_class=FileResponse)
 async def download_file(file_name: str, background_tasks: BackgroundTasks, translated_text : str):
