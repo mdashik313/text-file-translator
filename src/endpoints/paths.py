@@ -115,7 +115,7 @@ async def websocket_endpoint(websocket: WebSocket, session_id: str):
     translated_file_path = task["file_path"]
     translated_file_name = task["translated_file_name"]
     translated_text = task["translated_text"]
-    download_link = "http://${window.location.host}/download/" + f"{translated_file_name}/{translated_text}"
+    download_link = "https://text-file-translator-api.onrender.com/download/" + f"{translated_file_name}/{translated_text}"
 
     await websocket.send_text(f"Translation complete! Download your file here: {download_link}")
 
