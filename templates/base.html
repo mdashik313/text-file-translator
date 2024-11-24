@@ -69,9 +69,6 @@
                 body: formData
             });
 
-            
-            // const data = await response.json();
-            // const sessionId = data.session_id;
 
             // Open WebSocket connection for status updates
             const ws = new WebSocket(`ws://0.0.0.0:8000/ws/${session_id}`);
@@ -79,10 +76,6 @@
             ws.onmessage = (event) => {
                 // Updating the status
                 const message = event.data
-
-                // const message = document.createElement("li");
-                // message.textContent = event.data; // Correct way to set the message
-                // statusDiv.appendChild(message);
 
                 const listItem = document.createElement("li");
 
