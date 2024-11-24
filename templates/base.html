@@ -71,7 +71,7 @@
 
             
             // Open WebSocket connection for status updates
-            const ws = new WebSocket(`ws://${window.location.host}/ws/${session_id}`);
+            const ws = new WebSocket(`wss://${window.location.host}/ws/${session_id}`);
 
             ws.onmessage = (event) => {
                 // Updating the status
