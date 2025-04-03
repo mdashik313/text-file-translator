@@ -8,7 +8,7 @@
         <thead>
             <tr>
                 <th>File Name</th>
-                <th>Status</th>
+                <!-- <th>Status</th> -->
                 <th>Date of Processing</th>
                 <th>Download</th>
             </tr>
@@ -17,7 +17,7 @@
             {% for file in files %}
             <tr>
                 <td>{{ file.translated_file_name }}</td>
-                <td>completed</td>
+                <!-- <td>completed</td> -->
                 <td>{{ file.processed_at }}</td>
                 <td><a href="http://0.0.0.0:8000/download/{{file.translated_file_name}}/{{file.translated_text}}">Download</a></td>
             </tr>
