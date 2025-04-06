@@ -2,7 +2,7 @@
 <h2> A text file translation microservice using FastAPI and LLM APIs.</h2>
 
 ## Running the Application
-Before starting you have [Python](https://www.python.org/downloads/), [pip and virtual environment](https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/) be installed.
+Before starting you need [Python](https://www.python.org/downloads/), [pip and virtual environment](https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/) ti be installed.
 
 1. Clone the repository
 
