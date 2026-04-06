@@ -23,7 +23,7 @@ client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 
 async def translate(source_text, target_language):
     PROMPT = f"Translate the given text to {target_language}(give translated text only): \"{source_text}\""
-    response = client.models.generate_content(model="gemini-3-flash-latest", contents=PROMPT)
+    response = client.models.generate_content(model="gemini-3-flash-preview", contents=PROMPT)
     print(response.text)
     print("translation completed[from gemini api].")
     return response.text
